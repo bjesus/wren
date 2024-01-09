@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+
+import argparse
+from core import (
+    create_new_task,
+    get_summary,
+    get_task_content,
+    get_tasks,
+    mark_task_done,
+)
+
+
+def create_file(name):
+    filename = create_new_task(name)
+    print("created task:", filename)
+
+
+def list_files():
+    tasks = get_tasks()
+    print("".join(map(lambda t: "➜ " + t + "\n", tasks))[:-1])
+
+
+def print_summary():
+    summary = get_summary()
+    print(summary)
+
+
+def read_content(name):
+    content = get_task_content(name)
+    print(content)
+
+
+def mark_done(name):
+    message = mark_task_done(name)
+    print(message)
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-r", "--read", metavar="foo", type=str, help="Read a task content")
+parser.add_argument("-d", "--done", metavar="foo", type=str, help="Mark a task as done")
+parser.add_argument("-t", "--telegram", action="store_true", help="Start Telegram bot")
+parser.add_argument("-s", "--summary", action="store_true", help="Generate a summary")
+parser.add_argument("task", nargs="*", help="a new task to be created")
+parser.add_argument(
+    "-l", "--ls", "--list", action="store_true", help="List all current tasks"
+)
+args = parser.parse_args()
+
+if args.ls:
+    list_files()
+elif args.telegram:
+    from telegram import start_bot
+
+    start_bot()
+elif args.summary:
+    print_summary()
+elif args.read:
+    read_content(args.read)
+elif args.done:
+    mark_done(args.done)
+else:
+    if args.task:
+        create_file(" ".join(args.task))
+    else:
+        list_files()

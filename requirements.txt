@@ -1,0 +1,13 @@
+APScheduler==3.10.4
+certifi==2023.11.17
+charset-normalizer==3.3.2
+idna==3.6
+pathvalidate==3.2.0
+platformdirs==4.1.0
+pyTelegramBotAPI==4.14.1
+pytz==2023.3.post1
+requests==2.31.0
+six==1.16.0
+telebot==0.0.5
+tzlocal==5.2
+urllib3==2.1.0
