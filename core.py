@@ -54,7 +54,9 @@ def get_tasks():
         for file in os.listdir(notes_dir)
         if os.path.isfile(os.path.join(notes_dir, file)) and not file.startswith(".")
     ]
-    return files
+    return sorted(
+        files, key=lambda x: os.path.getctime(os.path.join(notes_dir, x)), reverse=True
+    )
 
 
 def get_summary():
