@@ -30,7 +30,8 @@ def get_all_schedules():
 
 @bot.message_handler(commands=["list"])
 def list_tasks(message):
-    tasks = get_tasks()
+    filter = " ".join(message.text.split(" ")[1:])
+    tasks = get_tasks(filter)
     response = "".join(map(lambda t: "- " + t + "\n", tasks))
     bot.send_message(message.chat.id, response)
 

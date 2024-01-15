@@ -48,11 +48,13 @@ def create_new_task(content):
     return filename
 
 
-def get_tasks():
+def get_tasks(s=""):
     files = [
         file
         for file in os.listdir(notes_dir)
-        if os.path.isfile(os.path.join(notes_dir, file)) and not file.startswith(".")
+        if os.path.isfile(os.path.join(notes_dir, file))
+        and not file.startswith(".")
+        and s in file
     ]
     return sorted(
         files, key=lambda x: os.path.getctime(os.path.join(notes_dir, x)), reverse=True
@@ -118,7 +120,7 @@ def mark_task_done(name):
     found, filename = get_task_file(name)
     if found:
         shutil.move(os.path.join(notes_dir, filename), os.path.join(done_dir, filename))
-        response = f'marked "{filename} as done"'
+        response = f'marked "{filename}" as done'
     else:
         response = filename
     return response

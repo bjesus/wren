@@ -16,13 +16,13 @@ def create_file(name):
     print("created task:", filename)
 
 
-def list_files():
-    tasks = get_tasks()
+def list_files(s=""):
+    tasks = get_tasks(s)
     print("".join(map(lambda t: "➜ " + t + "\n", tasks))[:-1])
 
 
 def print_random():
-    tasks = get_tasks()
+    tasks = get_tasks("")
     print(choice(tasks))
 
 
@@ -49,12 +49,19 @@ parser.add_argument("-s", "--summary", action="store_true", help="Generate a sum
 parser.add_argument("-o", "--one", action="store_true", help="Print one random task")
 parser.add_argument("task", nargs="*", help="a new task to be created")
 parser.add_argument(
-    "-l", "--ls", "--list", action="store_true", help="List all current tasks"
+    "-l",
+    "--ls",
+    "--list",
+    type=str,
+    help="List all current tasks",
+    nargs="?",
+    const="",
+    default=None,
 )
 args = parser.parse_args()
 
-if args.ls:
-    list_files()
+if args.ls != None:
+    list_files(args.ls)
 elif args.telegram:
     from telegram import start_bot
 
