@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 
+import os
 import argparse
+import subprocess
 from random import choice
 from core import (
     create_new_task,
     get_summary,
     get_task_content,
+    get_task_file,
     get_tasks,
     mark_task_done,
+    notes_dir,
 )
+
+editor = os.environ.get("EDITOR", "vi")
 
 
 def create_file(name):
@@ -31,6 +37,13 @@ def print_summary():
     print(summary)
 
 
+def edit_content(name):
+    found, filename = get_task_file(name)
+    if found:
+        filepath = os.path.join(notes_dir, filename)
+        subprocess.run([editor, filepath])
+
+
 def read_content(name):
     content = get_task_content(name)
     print(content)
@@ -43,6 +56,7 @@ def mark_done(name):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--read", metavar="foo", type=str, help="Read a task content")
+parser.add_argument("-e", "--edit", metavar="foo", type=str, help="Edit a task content")
 parser.add_argument("-d", "--done", metavar="foo", type=str, help="Mark a task as done")
 parser.add_argument("-t", "--telegram", action="store_true", help="Start Telegram bot")
 parser.add_argument("-s", "--summary", action="store_true", help="Generate a summary")
@@ -68,6 +82,8 @@ elif args.telegram:
     start_bot()
 elif args.one:
     print_random()
+elif args.edit:
+    edit_content(args.edit)
 elif args.summary:
     print_summary()
 elif args.read:
