@@ -142,4 +142,4 @@ for schedule in schedules:
 def start_bot():
     print("Starting telegram bot")
     scheduler.start()
-    bot.polling()
+    bot.infinity_polling(timeout=10, long_polling_timeout=5)
