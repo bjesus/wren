@@ -14,10 +14,26 @@ from core import (
 )
 
 bot = telebot.TeleBot(config["telegram_token"])
+allowed_chats = config["allowed_telegram_chats"]
 scheduler = BackgroundScheduler()
 
 data_dir = user_data_dir("knowts", "knowts")
 schedules_path = os.path.join(data_dir, "schedules.json")
+
+
+def only_allowed_chats(func):
+    def authenticate(*args, **kwargs):
+        chat_id = args[0].chat.id
+        if chat_id not in allowed_chats:
+            bot.send_message(
+                chat_id,
+                "please add this chat id to your allowed chats: " + str(chat_id),
+            )
+            return
+        result = func(*args, **kwargs)
+        return result
+
+    return authenticate
 
 
 def get_all_schedules():
@@ -29,6 +45,7 @@ def get_all_schedules():
 
 
 @bot.message_handler(commands=["list"])
+@only_allowed_chats
 def list_tasks(message):
     filter = " ".join(message.text.split(" ")[1:])
     tasks = get_tasks(filter)
@@ -37,12 +54,14 @@ def list_tasks(message):
 
 
 @bot.message_handler(commands=["summary"])
+@only_allowed_chats
 def summary(message):
     summary = get_summary()
     bot.send_message(message.chat.id, summary)
 
 
 @bot.message_handler(commands=["done", "d", "do", "don"])
+@only_allowed_chats
 def mark_as_done(message):
     name = " ".join(message.text.split(" ")[1:])
     response = mark_task_done(name)
@@ -50,6 +69,7 @@ def mark_as_done(message):
 
 
 @bot.message_handler(commands=["read"])
+@only_allowed_chats
 def read_task(message):
     name = " ".join(message.text.split(" ")[1:])
     response = get_task_content(name)
@@ -57,6 +77,7 @@ def read_task(message):
 
 
 @bot.message_handler(commands=["help"])
+@only_allowed_chats
 def help(message):
     bot.send_message(
         message.chat.id,
@@ -81,6 +102,7 @@ def start(message):
 
 
 @bot.message_handler(commands=["schedule"])
+@only_allowed_chats
 def create_scheduled_message(message):
     schedule = " ".join(message.text.split(" ")[1:])
     job = [message.chat.id, schedule]
@@ -116,12 +138,14 @@ def create_scheduled_message(message):
 @bot.message_handler(
     func=lambda message: len(message.text) > 3 and not message.text.startswith("/")
 )
+@only_allowed_chats
 def add(message):
     filename = create_new_task(message.text)
     bot.send_message(message.chat.id, "added: " + filename)
 
 
 @bot.message_handler(func=lambda message: True)
+@only_allowed_chats
 def reply_no(message):
     bot.reply_to(message, "not sure what you want. seek /help")
 

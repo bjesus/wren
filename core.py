@@ -19,6 +19,7 @@ config = {
     "done_dir": "~/Notes/done",
     "openai_token": "",
     "telegram_token": "",
+    "allowed_telegram_chats": [],
     "about_user": "The user chose to specify nothing.",
 }
 
