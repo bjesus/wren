@@ -4,13 +4,16 @@ from pathvalidate import sanitize_filename
 import requests
 import json
 from datetime import datetime
+from dateutil import parser
 from platformdirs import user_data_dir, user_config_dir
+from croniter import croniter
 
 # import pprint
 # pp = pprint.PrettyPrinter().pprint
 
 notes_dir = os.path.expanduser("~/Notes")
 done_dir = os.path.join(notes_dir, "done")
+future_dir = os.path.join(notes_dir, "future")
 data_dir = user_data_dir("knowts", "knowts")
 config_dir = user_config_dir("knowts", "knowts")
 messages_log = os.path.join(data_dir, "messages.json")
@@ -42,13 +45,63 @@ mkdir(done_dir)
 
 def create_new_task(content):
     filename = sanitize_filename(content.split("\n")[0])
+    # check if future task
+    future = False
+    try:
+        parser.parse(filename.split(" ")[0])
+        future = True
+    except:
+        pass
+    try:
+        croniter(" ".join(filename.split(" ")[:5]))
+        future = True
+    except:
+        pass
     content = "\n".join(content.split("\n")[1:])
-    with open(os.path.join(notes_dir, filename), "w") as file:
+    dest = future_dir if future else notes_dir
+    with open(os.path.join(dest, filename), "w") as file:
         file.write(content)
     return filename
 
 
+def process_future():
+    now = datetime.now()
+    for file in os.listdir(future_dir):
+        path = os.path.join(future_dir, file)
+        if os.path.isfile(path):
+            time = file.split(" ")[0]
+            if len(time) < 5:
+                # parse as cron
+                task_name = " ".join(file.split(" ")[5:])
+                cron = " ".join(file.split(" ")[:5])
+                last_task = None
+                for path in [
+                    os.path.join(notes_dir, task_name),
+                    os.path.join(done_dir, task_name),
+                ]:
+                    if os.path.exists(path):
+                        last_modified_date = datetime.fromtimestamp(
+                            os.path.getmtime(path)
+                        )
+                        if last_task is None or last_modified_date > last_task:
+                            last_task = last_modified_date
+                if not last_task or croniter(cron, last_task).get_next(datetime) <= now:
+                    shutil.copy(
+                        os.path.join(future_dir, file),
+                        os.path.join(notes_dir, task_name),
+                    )
+            else:
+                # parse as timestamp
+                try:
+                    task_time = parser.parse(time)
+                    if task_time <= now:
+                        shutil.move(path, notes_dir)
+                except:
+                    print("cannot parse future task: " + file)
+
+
 def get_tasks(s=""):
+    process_future()
     files = [
         file
         for file in os.listdir(notes_dir)
@@ -62,6 +115,7 @@ def get_tasks(s=""):
 
 
 def get_summary():
+    process_future()
     url = "https://api.openai.com/v1/chat/completions"
     current_time = datetime.now().isoformat()
     tasks = get_tasks()
