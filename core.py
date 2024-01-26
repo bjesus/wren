@@ -8,21 +8,18 @@ from dateutil import parser
 from platformdirs import user_data_dir, user_config_dir
 from croniter import croniter
 
-# import pprint
-# pp = pprint.PrettyPrinter().pprint
 
-notes_dir = os.path.expanduser("~/Notes")
-done_dir = os.path.join(notes_dir, "done")
-future_dir = os.path.join(notes_dir, "future")
 data_dir = user_data_dir("knowts", "knowts")
 config_dir = user_config_dir("knowts", "knowts")
 messages_log = os.path.join(data_dir, "messages.json")
 
 config = {
-    "mode": "single-user",
-    "openaiToken": "",
-    "telegramToken": "",
-    "notes_dir": os.path.expanduser("~/Notes"),
+    "notes_dir": "~/Notes",
+    "future_dir": "~/Notes/future",
+    "done_dir": "~/Notes/done",
+    "openai_token": "",
+    "telegram_token": "",
+    "about_user": "The user chose to specify nothing.",
 }
 
 try:
@@ -31,6 +28,15 @@ try:
 except FileNotFoundError:
     user_config = {}
 config = {**config, **user_config}
+
+
+def parse_path(p, base=""):
+    return os.path.join(base, os.path.expanduser(p))
+
+
+notes_dir = parse_path(config["notes_dir"])
+done_dir = parse_path(config["done_dir"], notes_dir)
+future_dir = parse_path(config["future_dir"], notes_dir)
 
 
 def mkdir(path):
@@ -141,7 +147,7 @@ def get_summary():
     }
     headers = {
         "content-type": "application/json",
-        "Authorization": "Bearer " + config["openaiToken"],
+        "Authorization": "Bearer " + config["openai_token"],
     }
 
     response = requests.post(url, json=payload, headers=headers)

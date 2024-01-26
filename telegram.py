@@ -13,7 +13,7 @@ from core import (
     config,
 )
 
-bot = telebot.TeleBot(config["telegramToken"])
+bot = telebot.TeleBot(config["telegram_token"])
 scheduler = BackgroundScheduler()
 
 data_dir = user_data_dir("knowts", "knowts")
