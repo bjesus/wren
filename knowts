@@ -58,7 +58,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--read", metavar="foo", type=str, help="Read a task content")
 parser.add_argument("-e", "--edit", metavar="foo", type=str, help="Edit a task content")
 parser.add_argument("-d", "--done", metavar="foo", type=str, help="Mark a task as done")
-parser.add_argument("-t", "--telegram", action="store_true", help="Start Telegram bot")
+parser.add_argument("--telegram", action="store_true", help="Start Telegram bot")
+parser.add_argument("--http", action="store_true", help="Start HTTP server")
 parser.add_argument("-s", "--summary", action="store_true", help="Generate a summary")
 parser.add_argument("-o", "--one", action="store_true", help="Print one random task")
 parser.add_argument("task", nargs="*", help="a new task to be created")
@@ -76,6 +77,10 @@ args = parser.parse_args()
 
 if args.ls != None:
     list_files(args.ls)
+elif args.http:
+    from http_server import start_server
+
+    start_server()
 elif args.telegram:
     from telegram import start_bot
 
