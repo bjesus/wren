@@ -55,7 +55,7 @@ mkdir(done_dir)
 
 
 def create_new_task(content: str) -> str:
-    filename = sanitize_filename(content.split("\n")[0])
+    filename = sanitize_filename(content.split("\n")[0].replace("*", "＊"))
     content = "\n".join(content.split("\n")[1:])
     with open(os.path.join(notes_dir, filename), "w") as file:
         file.write(content)
@@ -171,7 +171,7 @@ def is_present_task(file: str) -> bool:
     if not file[0].isdigit():
         return True
     if is_cron_task(file):
-        cron = " ".join(file.split(" ")[:5])
+        cron = " ".join(file.replace("＊", "*").split(" ")[:5])
         last_task = None
         path = os.path.join(done_dir, file)
         if os.path.exists(path):
@@ -180,6 +180,8 @@ def is_present_task(file: str) -> bool:
                 last_task = last_modified_date
             if not last_task or croniter(cron, last_task).get_next(datetime) <= now:
                 return True
+        else:
+            return True
     elif is_dated_task(file):
         time = file.split(" ")[0]
         task_time = parser.parse(time)
@@ -206,6 +208,8 @@ def is_dated_task(filename: str) -> bool:
 
 def is_cron_task(filename: str) -> bool:
     splitted = filename.split()
-    if len(splitted) < 6 or not all((s.isdigit() or s == "*") for s in splitted[:3]):
+    if len(splitted) < 6 or not all(
+        (s.isdigit() or s in ["＊", "*"]) for s in splitted[:3]
+    ):
         return False
     return True
