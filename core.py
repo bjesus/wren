@@ -10,8 +10,8 @@ from croniter import croniter
 
 # Load config and set up folders
 
-data_dir = user_data_dir("knowts", "knowts")
-config_dir = user_config_dir("knowts", "knowts")
+data_dir = user_data_dir("wren", "wren")
+config_dir = user_config_dir("wren", "wren")
 messages_log = os.path.join(data_dir, "messages.json")
 
 config = {
@@ -24,7 +24,7 @@ config = {
 }
 
 try:
-    with open(os.path.join(config_dir, "knowts.json"), "r") as file:
+    with open(os.path.join(config_dir, "wren.json"), "r") as file:
         user_config = json.load(file)
 except FileNotFoundError:
     user_config = {}

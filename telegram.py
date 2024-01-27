@@ -17,7 +17,7 @@ bot = telebot.TeleBot(config["telegram_token"])
 allowed_chats = config["allowed_telegram_chats"]
 scheduler = BackgroundScheduler()
 
-data_dir = user_data_dir("knowts", "knowts")
+data_dir = user_data_dir("wren", "wren")
 schedules_path = os.path.join(data_dir, "schedules.json")
 
 
@@ -81,7 +81,7 @@ def read_task(message):
 def help(message):
     bot.send_message(
         message.chat.id,
-        "knowts\n\n- enter any text to save it as task\n- mark a task as done by `/done foo`",
+        "wren\n\n- enter any text to save it as task\n- mark a task as done by `/done foo`",
     )
 
 
@@ -98,7 +98,7 @@ def start(message):
     bot.set_chat_menu_button(
         message.chat.id, telebot.types.MenuButtonCommands("commands")
     )
-    bot.send_message(message.chat.id, "knowts.\n\nuse /help to get help")
+    bot.send_message(message.chat.id, "wren.\n\nuse /help to get help")
 
 
 @bot.message_handler(commands=["schedule"])
