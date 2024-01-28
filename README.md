@@ -36,10 +36,10 @@ The management of tasks in Wren is simple:
 The regular usage mode Wren is the command line. For the following examples, `n` is my alias to `wren`, but you can use any alias or just call `wren` directly. Normal tasks can be created by just typing them
 ```
 $ n build a spaceship
-created task: go to the moon
+created task: build a spaceship
 
 $ n go to the moon
-created task: my other note
+created task: go to the moon
 
 $ n 'discuss galaxy peace with aliens
 tell them that we won't hurt them
