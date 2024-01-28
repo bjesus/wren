@@ -4,7 +4,7 @@ from apscheduler.triggers.cron import CronTrigger
 import os
 import json
 from platformdirs import user_data_dir
-from core import (
+from wren.core import (
     create_new_task,
     get_summary,
     mark_task_done,

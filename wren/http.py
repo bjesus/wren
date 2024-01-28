@@ -1,5 +1,5 @@
 from bottle import route, run, template, request, abort
-from core import (
+from wren.core import (
     create_new_task,
     mark_task_done,
     get_tasks,

@@ -23,8 +23,10 @@ config = {
     "about_user": "The user chose to specify nothing.",
 }
 
+config_file = os.path.join(config_dir, "wren.json")
+
 try:
-    with open(os.path.join(config_dir, "wren.json"), "r") as file:
+    with open(config_file, "r") as file:
         user_config = json.load(file)
 except FileNotFoundError:
     user_config = {}
