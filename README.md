@@ -21,7 +21,7 @@ The management of tasks in Wren is simple:
 - Tasks starting with a timestamp will not appear in the list before their time
 - Tasks starting with a cron signature will not be moved when completed. Instead they'll be copied to the `done` directory, and will reappear automatically when the the copied file is old enough.
 
-### Basic usage
+### Command line
 
 The regular usage mode Wren is the command line. For the following examples, `n` is my alias to `wren`, but you can use any alias or just call `wren` directly. Normal tasks can be created by just typing them
 ```
@@ -101,9 +101,17 @@ With `--http` you get both a simple tiny website that works through the browser,
 
 The HTTP server can be used to integrate with voice assistants, [Home Assistant](https://www.home-assistant.io/), [Tasker](https://joaoapps.com/tasker/) etc. Like with the Telegram bot, if you want to run it outside your computer, I highly recommend using [Syncthing](https://syncthing.net/).
 
+## Installation
+
+The easiest way to install wren is with pip
+
+```
+$ pip install wren-notes
+```
+
 ## Configuration
 
-See the configuration path for your OS using `--help`.
+See the configuration path for your OS using `--version`.
 
 The schema is as follows and all keys are optional. Remove the comments from your actual file.
 ```
