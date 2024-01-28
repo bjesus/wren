@@ -1,6 +1,13 @@
-# Wren
+<h1 align="center">
+Wren
+</h1>
 
-Wren is a note taking application and a to-do management system that is ridiculously simple, yet so advanced.
+<p align="center">
+a note taking application and a to-do management system that is ridiculously simple, yet very advanced.
+</p>
+<p align="center">
+<img src="https://github.com/bjesus/knowts/assets/55081/ab1f5584-267c-45da-b7bd-96fb38c66143" height="200">
+</p>
 
 It is simple because every note is just a file. The filename is the title, and the content is the note's content. Forget about HTML, Markdown - we're talking plain text. Just write. If you want a task to repeat every Saturday you just prefix it with a cron syntax, e.g. `0 8 * * 6 weekly swim`, and if you want a task to appear from a specific time you just start it with the date, like `2030-01-01 check if Wren became super popular`.
 
