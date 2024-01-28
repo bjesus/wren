@@ -8,7 +8,7 @@ from dateutil import parser
 from platformdirs import user_data_dir, user_config_dir
 from croniter import croniter
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 # Load config and set up folders
 
