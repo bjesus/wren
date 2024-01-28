@@ -98,7 +98,7 @@ def main():
         print("\nconfig: " + config_file)
         print("data directory: " + data_dir)
     elif args.http:
-        from wren.http import start_server
+        from wren.http_server import start_server
 
         start_server()
     elif args.telegram:
