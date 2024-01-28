@@ -1,9 +1,10 @@
-from bottle import route, run, template, request, abort
+from bottle import route, run, request, abort, auth_basic
 from wren.core import (
     create_new_task,
     mark_task_done,
     get_tasks,
     get_task_content,
+    config,
 )
 from json import dumps
 
@@ -16,7 +17,21 @@ def is_request_html(request):
     return "html" in headers["Accept"]
 
 
+def is_authenticated_user(user, password):
+    if config["http_user"] == user and config["http_password"] == password:
+        return True
+    else:
+        return False
+
+
+def auth(func):
+    if not config["http_user"] and not config["http_password"]:
+        return func
+    return auth_basic(is_authenticated_user)(func)
+
+
 @route("/", method="GET")
+@auth
 def query():
     tasks = get_tasks()
     if is_request_html(request):
@@ -35,6 +50,7 @@ def query():
 
 
 @route("/", method="POST")
+@auth
 def create():
     filename = ""
     value = ""
@@ -56,6 +72,7 @@ def create():
 
 
 @route("/<task>", method="GET")
+@auth
 def read_content(task):
     content = get_task_content(task)
     if is_request_html(request):
@@ -64,6 +81,7 @@ def read_content(task):
 
 
 @route("/<task>", method="DELETE")
+@auth
 def done(task):
     response = mark_task_done(task)
     if is_request_html(request):

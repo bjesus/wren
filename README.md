@@ -120,6 +120,8 @@ The schema is as follows and all keys are optional. Remove the comments from you
 {
   "notes_dir": "~/Notes",  // This can absolute or include ~
   "done_dir": "done",      // This can be relative to the notes dir, or absolute
+  "http_user": "",         // Fill this to enable basic HTTP auth for the HTTP server
+  "http_password": "",     // Same as above
   "openai_token": "",      // Fill this if you want to use summaries
   "telegram_token": "",    // Fill this if you want the Telegram bot
   "allowed_telegram_chats": [

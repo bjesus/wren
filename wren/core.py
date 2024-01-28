@@ -8,7 +8,7 @@ from dateutil import parser
 from platformdirs import user_data_dir, user_config_dir
 from croniter import croniter
 
-__version__ = "0.1.3"
+__version__ = "0.2.0"
 
 # Load config and set up folders
 
@@ -19,6 +19,8 @@ messages_log = os.path.join(data_dir, "messages.json")
 config = {
     "notes_dir": "~/Notes",
     "done_dir": "~/Notes/done",
+    "http_user": "",
+    "http_password": "",
     "openai_token": "",
     "telegram_token": "",
     "allowed_telegram_chats": [],
