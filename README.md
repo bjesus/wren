@@ -9,65 +9,75 @@ a note taking application and a to-do management system that is ridiculously sim
 <img src="https://github.com/bjesus/knowts/assets/55081/ab1f5584-267c-45da-b7bd-96fb38c66143" height="200">
 </p>
 
-It is simple because every note is just a file. The filename is the title, and the content is the note's content. Forget about HTML, Markdown - we're talking plain text. Just write. If you want a task to repeat every Saturday you just prefix it with a cron syntax, e.g. `0 8 * * 6 weekly swim`, and if you want a task to appear from a specific time you just start it with the date, like `2030-01-01 check if Wren became super popular`.
+Wren is simple because every note is one file. The filename is the title, and the content is the note's content. This makes it very easy to sync tasks between devices, as conflicts can almost never happen, even if syncing isn't done real time. The files are plain text, so you can just write. If you want a task to repeat every Saturday you just prefix it with a cron syntax, e.g. `0 8 * * 6 weekly swim`, and if you want a task to appear from a specific time you just start it with the date, like `2030-01-01 check if Wren became super popular`.
 
-It is advanced because it is very extensible - it comes (optionally!) with a Telegram bot that you can chat with to manage your notes, and even get AI-driven daily summaries. It also includes a tiny HTTP server that you can use to manage tasks using an API or from the browser.
+Wren is advanced because it is very extensible - it comes (optionally!) with a Telegram bot that you can chat with to manage your notes, and even get AI-driven daily summaries as if you had a personal assistant. It also includes a tiny HTTP server that you can use to manage tasks using an API or from the browser, which can be used for displaying you tasks elsewhere (e.g. in your e-reader).
+
+https://github.com/bjesus/wren/assets/55081/0deff819-ab30-4a64-a4db-5e9a29179309
+
+## Installation
+
+The easiest way to install Wren is with pip:
+
+```
+$ pip install wren-notes
+```
 
 ## Usage
 
 The management of tasks in Wren is simple:
-- Tasks are just files living your `notes` folder. You might as well create them with `touch task` and edit them with `vim task`
+- Tasks are just files living your `notes` folder. You might as well create them with `touch task` and edit them with `vim task`.
 - Completed tasks are moved to your `done` folder.
-- Tasks starting with a timestamp will not appear in the list before their time
-- Tasks starting with a cron signature will not be moved when completed. Instead they'll be copied to the `done` directory, and will reappear automatically when the the copied file is old enough.
+- Tasks starting with a YYYY-MM-DD will not appear in the list of tasks before their time arrived.
+- Tasks starting with a cron signature will not be moved when completed. Instead they'll be copied to the `done` directory, and will reappear automatically when the copied file is old enough.
 
 ### Command line
 
 The regular usage mode Wren is the command line. For the following examples, `n` is my alias to `wren`, but you can use any alias or just call `wren` directly. Normal tasks can be created by just typing them
 ```
-$ n my new task
-created task: my new task
+$ n build a spaceship
+created task: go to the moon
 
-$ n my other note
+$ n go to the moon
 created task: my other note
 
-$ n 'task with some content
-anything you put from here on will
-go inside the file content
-created task: task with some content
+$ n 'discuss galaxy peace with aliens
+tell them that we won't hurt them
+and that we can probably reach some agreement'
+created task: discuss galaxy peace with aliens
 ```
 
 Reading a task content is done with the `-r` flag:
 ```
-$ n -r some
-task with some content
-anything you put from here on wiil
-go inside the file content
+$ n -r galaxy
+discuss galaxy peace with aliens
+tell them that we won't hurt them
+and that we can probably reach some agreement
 ```
 Note that when referring to a task, you can give Wren any part of the task title.
 
-Listing your current tasks is done with `n`, or if you want to filter you can use `n -l query`:
+For listing your current tasks, just run `n`. Or if you want to filter your tasks, you can use `n --ls query`:
 ```
 $ n
-➜ task with some content
-➜ my other note
-➜ my new task
+➜ discuss galaxy peace with aliens
+➜ go to the moon
+➜ build a spaceship
 
-$ n -l my
-➜ my other note
-➜ my new task
+$ n --ls th
+➜ discuss galaxy peace with aliens
+➜ go to the moon
 ```
 
 Use  `-e` to edit a task in your `$EDITOR` or `-d` to mark it as done:
 ```
-$ n -d some
-marked "task with some content" as done
+$ n -d moon
+marked "go to the moon" as done
 ```
 
 ### Integrations
 
 ##### Random task
-Use `--one` to print one random task. When would you ever use that? I'm using it with Waybar to always have one task displayed at the bottom of my screen, like this:
+Use `--one` to print one random task. I'm using it with [Waybar](https://github.com/Alexays/Waybar/) to always have one task displayed at the bottom of my screen, like this:
 ```
   "custom/task": {
     "tooltip": true,
@@ -79,15 +89,15 @@ Use `--one` to print one random task. When would you ever use that? I'm using it
 
 ##### AI Assistant
 
-Wren can also work like an AI Assistant. If you use `--summary` it will use GPT4 to create a nice human like message telling you what's waiting for you today, and congratulates you for the stuff you have completed recently. You can use it to update `/etc/motd` daily, or through the Telegram bot (below).
+Wren can also work like an AI Assistant. If you use `--summary` it will use GPT4 to create a nice human like message telling you what's waiting for you today, and congratulate you for the stuff you have completed recently. You can use it to update `/etc/motd` daily, or through the Telegram bot (below).
 
 ##### Telegram bot
 
 Using `--telegram` will spin up a Telegram bot listener that will respond to your messages and allow you to create tasks, list them, edit them and so on. It will also allow you to set a cron-based schedule for receiving AI Assistant messages. This can be handy if you want to start your day with a message from Wren telling you about your upcoming tasks.
 
 - List tasks using `/list`
-- Create task by just writing it, e.g. `my new task`
-- Mark as done with `/done task`
+- Create task by just writing it, e.g. `make a plan for going back to earth`
+- Mark as done with `/done plan`
 - See more at `/help`
 
 If you want to run it outside your computer (e.g. so it's always available), I highly recommend using [Syncthing](https://syncthing.net/) to sync your notes.
@@ -99,19 +109,11 @@ With `--http` you get both a simple tiny website that works through the browser,
 - Create task: `curl http://localhost:8080 -d '{"task": "create HTTP interface"}' -H 'content-type: application/json'`
 - Mark as done: `curl http://localhost:8080/content -X DELETE`
 
-The HTTP server can be used to integrate with voice assistants, [Home Assistant](https://www.home-assistant.io/), [Tasker](https://joaoapps.com/tasker/) etc. Like with the Telegram bot, if you want to run it outside your computer, I highly recommend using [Syncthing](https://syncthing.net/).
-
-## Installation
-
-The easiest way to install wren is with pip
-
-```
-$ pip install wren-notes
-```
+The HTTP server can be used to integrate with voice assistants, [Home Assistant](https://www.home-assistant.io/), [Tasker](https://joaoapps.com/tasker/) etc. Like with the Telegram bot, if you want to run it outside your computer, I recommend using [Syncthing](https://syncthing.net/).
 
 ## Configuration
 
-See the configuration path for your OS using `--version`.
+See the configuration path on your operating system using `--version`.
 
 The schema is as follows and all keys are optional. Remove the comments from your actual file.
 ```
