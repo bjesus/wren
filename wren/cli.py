@@ -14,6 +14,7 @@ from wren.core import (
     notes_dir,
     config_file,
     data_dir,
+    __version__,
 )
 
 editor = os.environ.get("EDITOR", "vi")
@@ -93,8 +94,8 @@ def main():
     if args.ls != None:
         list_files(args.ls)
     elif args.version:
-        print("Wren 0.1.0\n")
-        print("config: " + config_file)
+        print("Wren " + __version__)
+        print("\nconfig: " + config_file)
         print("data directory: " + data_dir)
     elif args.http:
         from wren.http import start_server
