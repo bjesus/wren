@@ -23,6 +23,11 @@ The easiest way to install Wren is with pip:
 $ pip install wren-notes
 ```
 
+To install with all optional dependencies:
+```
+$ pip install "wren-notes[telegram,http]"
+```
+
 ## Usage
 
 The management of tasks in Wren is simple:

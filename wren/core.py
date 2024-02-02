@@ -8,7 +8,7 @@ from dateutil import parser
 from platformdirs import user_data_dir, user_config_dir
 from croniter import croniter
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 # Load config and set up folders
 
@@ -86,6 +86,8 @@ def get_tasks(query="") -> list[str]:
 
 
 def get_summary() -> str:
+    if not config["openai_token"]:
+        return "Please specify your OpenAI token in the Wren config file"
     url = "https://api.openai.com/v1/chat/completions"
     current_time = datetime.now().isoformat()
     tasks = get_tasks()

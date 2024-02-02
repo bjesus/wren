@@ -1,4 +1,8 @@
-from bottle import route, run, request, abort, auth_basic
+try:
+    from bottle import route, run, request, abort, auth_basic
+except:
+    print("Please install the HTTP server dependencies: pip install 'wren-notes[http]'")
+    exit(1)
 from wren.core import (
     create_new_task,
     mark_task_done,

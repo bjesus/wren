@@ -1,6 +1,12 @@
-import telebot
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.cron import CronTrigger
+try:
+    import telebot
+    from apscheduler.schedulers.background import BackgroundScheduler
+    from apscheduler.triggers.cron import CronTrigger
+except:
+    print(
+        "Please install the Telegram bot dependencies: pip install 'wren-notes[http]'"
+    )
+    exit(1)
 import os
 import json
 from platformdirs import user_data_dir
