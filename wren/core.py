@@ -25,6 +25,9 @@ config = {
     "telegram_token": "",
     "allowed_telegram_chats": [],
     "about_user": "The user chose to specify nothing.",
+    "homeserver": "",
+    "matrix_localpart": "",
+    "matrix_password": "",
 }
 
 config_file = os.path.join(config_dir, "wren.json")
