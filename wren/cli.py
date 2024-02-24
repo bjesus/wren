@@ -25,8 +25,8 @@ def create_file(name):
     print("created task:", filename)
 
 
-def list_files(s=""):
-    tasks = get_tasks(s)
+def list_files(s="", done=False):
+    tasks = get_tasks(s, done)
     print("".join(map(lambda t: "➜ " + t + "\n", tasks))[:-1])
 
 
@@ -65,13 +65,19 @@ def main():
         "--ls",
         "--list",
         type=str,
-        help="List all current tasks",
+        help="List all current tasks. add -d to list done tasks",
         nargs="?",
         const="",
         default=None,
     )
     parser.add_argument(
-        "-d", "--done", metavar="foo", type=str, help="Mark a task as done"
+        "-d",
+        "--done",
+        metavar="foo",
+        type=str,
+        nargs="?",
+        const="",
+        help="Mark a task as done",
     )
     parser.add_argument(
         "-r", "--read", metavar="foo", type=str, help="Read a task content"
@@ -92,7 +98,7 @@ def main():
     args = parser.parse_args()
 
     if args.ls != None:
-        list_files(args.ls)
+        list_files(args.ls, args.done != None)
     elif args.version:
         print("Wren " + __version__)
         print("\nconfig: " + config_file)
@@ -119,7 +125,7 @@ def main():
         if args.task:
             create_file(" ".join(args.task))
         else:
-            list_files()
+            list_files("", args.done != None)
 
 
 if __name__ == "__main__":

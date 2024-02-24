@@ -8,7 +8,7 @@ from dateutil import parser
 from platformdirs import user_data_dir, user_config_dir
 from croniter import croniter
 
-__version__ = "0.2.1"
+__version__ = "0.3.0"
 
 # Load config and set up folders
 
@@ -68,17 +68,18 @@ def create_new_task(content: str) -> str:
     return filename
 
 
-def get_tasks(query="") -> list[str]:
+def get_tasks(query="", done=False) -> list[str]:
     global now
     now = datetime.now()
+    files_dir = notes_dir if not done else done_dir
     return [
         format_task_name(file)
         for file in sorted(
-            os.listdir(notes_dir),
-            key=lambda x: os.path.getctime(os.path.join(notes_dir, x)),
+            os.listdir(files_dir),
+            key=lambda x: os.path.getctime(os.path.join(files_dir, x)),
             reverse=True,
         )
-        if os.path.isfile(os.path.join(notes_dir, file))
+        if os.path.isfile(os.path.join(files_dir, file))
         and not file.startswith(".")
         and query in file
         and is_present_task(file)
