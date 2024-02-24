@@ -79,6 +79,18 @@ $ n -d moon
 marked "go to the moon" as done
 ```
 
+Check out everything you've done by using `-d` without a value:
+```
+$ n -d
+➜ go to the moon
+```
+
+If you want to postpone a task, just prepend some timestamp to it:
+```
+$ n --prepend 2030-01-01 galaxy
+renamed "discuss galaxy peace with aliens" to "2030-01-01 discuss galaxy peace with aliens"
+```
+
 ### Integrations
 
 ##### Random task

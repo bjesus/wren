@@ -11,6 +11,7 @@ from wren.core import (
     get_task_file,
     get_tasks,
     mark_task_done,
+    prepend_to_filename,
     notes_dir,
     config_file,
     data_dir,
@@ -52,6 +53,10 @@ def read_content(name):
     print(content)
 
 
+def prepend_to_task(name, text):
+    content = prepend_to_filename(name, text)
+
+
 def mark_done(name):
     message = mark_task_done(name)
     print(message)
@@ -86,6 +91,13 @@ def main():
         "-e", "--edit", metavar="foo", type=str, help="Edit a task content"
     )
     parser.add_argument(
+        "--prepend",
+        metavar="foo",
+        type=str,
+        help="Prepend something to the task's filename",
+    )
+
+    parser.add_argument(
         "-o", "--one", action="store_true", help="Print one random task"
     )
     parser.add_argument(
@@ -115,6 +127,8 @@ def main():
         print_random()
     elif args.edit:
         edit_content(args.edit)
+    elif args.prepend:
+        prepend_to_task(" ".join(args.task), args.prepend)
     elif args.summary:
         print_summary()
     elif args.read:

@@ -1,6 +1,6 @@
 import os
 import shutil
-from pathvalidate import sanitize_filename
+from pathvalidate import sanitize_filename as sanitize_filename_orig
 import requests
 import json
 from datetime import datetime
@@ -61,7 +61,7 @@ mkdir(done_dir)
 
 
 def create_new_task(content: str) -> str:
-    filename = sanitize_filename(content.split("\n")[0].replace("*", "＊"))
+    filename = sanitize_filename(content)
     content = "\n".join(content.split("\n")[1:])
     with open(os.path.join(notes_dir, filename), "w") as file:
         file.write(content)
@@ -139,7 +139,10 @@ def get_task_file(name: str) -> tuple[bool, str]:
     if len(matching_files) == 1:
         return (True, matching_files[0])
     elif len(matching_files) > 1:
-        return (False, "Error: Multiple matching files found.")
+        return (
+            False,
+            "Error - multiple matching files found:\n- " + "\n- ".join(matching_files),
+        )
     else:
         return (False, f"Error: No matching file for '{name}' found.")
 
@@ -156,6 +159,20 @@ def mark_task_done(name: str) -> str:
                 os.path.join(notes_dir, filename), os.path.join(done_dir, filename)
             )
         response = f'marked "{filename}" as done'
+    else:
+        response = filename
+    return response
+
+
+def prepend_to_filename(name: str, prepend_text: str) -> str:
+    found, filename = get_task_file(name)
+    if found:
+        new_filename = sanitize_filename(prepend_text + " " + filename)
+        shutil.move(
+            os.path.join(notes_dir, filename),
+            os.path.join(notes_dir, new_filename),
+        )
+        response = f'renamed "{filename}" to "{new_filename}"'
     else:
         response = filename
     return response
@@ -222,3 +239,7 @@ def is_cron_task(filename: str) -> bool:
     ):
         return False
     return True
+
+
+def sanitize_filename(filename: str) -> str:
+    return sanitize_filename_orig(filename.split("\n")[0].replace("*", "＊"))
