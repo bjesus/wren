@@ -55,6 +55,7 @@ def read_content(name):
 
 def prepend_to_task(name, text):
     content = prepend_to_filename(name, text)
+    print(content)
 
 
 def mark_done(name):
