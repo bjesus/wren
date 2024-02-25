@@ -4,12 +4,13 @@ try:
     from apscheduler.triggers.cron import CronTrigger
 except:
     print(
-        "Please install the Telegram bot dependencies: pip install 'wren-notes[http]'"
+        "Please install the Telegram bot dependencies: pip install 'wren-notes[telegram]'"
     )
     exit(1)
 import os
 import json
 from platformdirs import user_data_dir
+from croniter import croniter
 from wren.core import (
     create_new_task,
     get_summary,
@@ -127,18 +128,21 @@ def create_scheduled_message(message):
             bot.send_message(message.chat.id, f"you got nothing scheduled!")
         return
 
-    # save new schedule
-    schedules.extend([job])
-    with open(schedules_path, "w") as file:
-        json.dump(schedules, file, indent=2)
+    if croniter.is_valid(schedule):
+        # save new schedule
+        schedules.extend([job])
+        with open(schedules_path, "w") as file:
+            json.dump(schedules, file, indent=2)
 
-    # register it
-    scheduler.add_job(
-        send_summary,
-        CronTrigger.from_crontab(schedule),
-        kwargs={"chat_id": message.chat.id},
-    )
-    bot.send_message(message.chat.id, f"Added a schedule: {schedule}")
+        # register it
+        scheduler.add_job(
+            send_summary,
+            CronTrigger.from_crontab(schedule),
+            kwargs={"chat_id": message.chat.id},
+        )
+        bot.send_message(message.chat.id, f"Added a schedule: {schedule}")
+    else:
+        bot.send_message(message.chat.id, f"Invalid cron format: {schedule}")
 
 
 @bot.message_handler(
