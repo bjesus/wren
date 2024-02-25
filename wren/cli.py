@@ -11,6 +11,7 @@ from wren.core import (
     get_task_file,
     get_tasks,
     mark_task_done,
+    prepend_to_filename,
     notes_dir,
     config_file,
     data_dir,
@@ -25,8 +26,8 @@ def create_file(name):
     print("created task:", filename)
 
 
-def list_files(s=""):
-    tasks = get_tasks(s)
+def list_files(s="", done=False):
+    tasks = get_tasks(s, done)
     print("".join(map(lambda t: "➜ " + t + "\n", tasks))[:-1])
 
 
@@ -52,6 +53,11 @@ def read_content(name):
     print(content)
 
 
+def prepend_to_task(name, text):
+    content = prepend_to_filename(name, text)
+    print(content)
+
+
 def mark_done(name):
     message = mark_task_done(name)
     print(message)
@@ -65,13 +71,19 @@ def main():
         "--ls",
         "--list",
         type=str,
-        help="List all current tasks",
+        help="List all current tasks. add -d to list done tasks",
         nargs="?",
         const="",
         default=None,
     )
     parser.add_argument(
-        "-d", "--done", metavar="foo", type=str, help="Mark a task as done"
+        "-d",
+        "--done",
+        metavar="foo",
+        type=str,
+        nargs="?",
+        const="",
+        help="Mark a task as done",
     )
     parser.add_argument(
         "-r", "--read", metavar="foo", type=str, help="Read a task content"
@@ -79,6 +91,13 @@ def main():
     parser.add_argument(
         "-e", "--edit", metavar="foo", type=str, help="Edit a task content"
     )
+    parser.add_argument(
+        "--prepend",
+        metavar="foo",
+        type=str,
+        help="Prepend something to the task's filename",
+    )
+
     parser.add_argument(
         "-o", "--one", action="store_true", help="Print one random task"
     )
@@ -93,7 +112,7 @@ def main():
     args = parser.parse_args()
 
     if args.ls != None:
-        list_files(args.ls)
+        list_files(args.ls, args.done != None)
     elif args.version:
         print("Wren " + __version__)
         print("\nconfig: " + config_file)
@@ -110,6 +129,8 @@ def main():
         print_random()
     elif args.edit:
         edit_content(args.edit)
+    elif args.prepend:
+        prepend_to_task(" ".join(args.task), args.prepend)
     elif args.summary:
         print_summary()
     elif args.read:
@@ -120,7 +141,7 @@ def main():
         if args.task:
             create_file(" ".join(args.task))
         else:
-            list_files()
+            list_files("", args.done != None)
 
 
 if __name__ == "__main__":
