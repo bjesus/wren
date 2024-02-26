@@ -125,6 +125,10 @@ def main():
         from wren.telegram import start_bot
 
         start_bot()
+    elif args.matrix:
+        from wren.matrix import start_bot
+
+        start_bot()
     elif args.one:
         print_random()
     elif args.edit:

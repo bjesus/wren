@@ -4,7 +4,7 @@ try:
     from apscheduler.triggers.cron import CronTrigger
 except:
     print(
-        "Please install the Telegram bot dependencies: pip install 'wren-notes[http]'"
+        "Please install the Matrix bot dependencies: pip install 'wren-notes[matrix]'"
     )
     exit(1)
 import os
@@ -20,7 +20,7 @@ from wren.core import (
     config,
 )
 
-creds = botlib.Creds(config["homeserver"], config["matrix_localpart"], config["matrix_password"])
+creds = botlib.Creds(config["matrix_homeserver"], config["matrix_localpart"], config["matrix_password"])
 bot = botlib.Bot(creds)
 PREFIX = '!'
 COMMANDS = ["list", "summary", "done", "done", "do", "d", "read", "help", "schedule"]
@@ -107,17 +107,19 @@ async def create_scheduled_message(room, message):
     
     if match.prefix() and match.command("schedule") and match.is_not_from_this_bot():
         text = message.body
-        schedule = " ".join(text.split(" ")[1:])
-        job = [room.room_id, schedule]
+        schedule = " ".join(text.split(" ")[1:6])
+        task = " ".join(text.split(" ")[6:])
+        job = [room.room_id, schedule, task]
 
         # read current schedules
         schedules = get_all_schedules()
+        nl = "\n* "
         if not schedule:
-            my_schedules = [s[1] for s in schedules if s[0] == room.room_id]
+            my_schedules = [f"{s[2]} at {s[1]}" for s in schedules if s[0] == room.room_id]
             if my_schedules:
                 await bot.api.send_text_message(
                     room.room_id,
-                    f'your summaries are scheduled for: {", ".join(my_schedules)}'
+                    f'your scheduled summaries are:{nl}{nl.join(my_schedules)}'
                 )
             else:
                 await bot.api.send_text_message(
@@ -126,33 +128,27 @@ async def create_scheduled_message(room, message):
                 )
             return
 
-        # save new schedule
-        schedules.extend([job])
-        with open(schedules_path, "w") as file:
-            json.dump(schedules, file, indent=2)
+        if croniter.is_valid(schedule):
+            # save new schedule
+            schedules.extend([job])
+            with open(schedules_path, "w") as file:
+                json.dump(schedules, file, indent=2)
 
-        # check if cron and register schedule
-        if len(schedule) > 0:
-            if schedule[0].isdigit() or schedule[0] in ['*', ',', '-', '/']:
-                if schedule[1].isspace() and schedule[2].isdigit() or schedule[2] in ['*', ',', '-', '/']:
-                    trigger = schedule[0:9]
-                elif schedule[1].isdigit() or schedule[1] in ['*', ',', '-', '/']:
-                    trigger = " ".join(s for s in schedule[0:5])
-                # register it
-                scheduler.add_job(
-                    send_summary,
-                    CronTrigger.from_crontab(trigger),
-                    kwargs={"room": room.room_id},
-                )
-                await bot.api.send_text_message(
-                    room.room_id,
-                    f"Added a schedule: {schedule}"
-                )   
-            else:
-                await bot.api.send_text_message(
-                    room.room_id,
-                    f"Please format as cron"
-                )
+            # register schedule
+            scheduler.add_job(
+                send_summary,
+                CronTrigger.from_crontab(schedule),
+                kwargs={"room": room.room_id},
+            )
+            await bot.api.send_text_message(
+                room.room_id,
+                f"Added a schedule: {job[1]}: {job[2]}"
+            )   
+        else:
+            await bot.api.send_text_message(
+                room.room_id,
+                f"Invalid cron format: {schedule}"
+            )
 
 ### add ###
 @bot.listener.on_message_event
@@ -182,6 +178,15 @@ async def send_summary(room):
     await bot.api.send_text_message(
         room.room_id,
         get_summary()
+    )
+
+schedules = get_all_schedules()
+for schedule in schedules:
+    print("scheduled task: " + schedule[2] + " at " + schedule[1])    
+    scheduler.add_job(
+        send_summary,
+        CronTrigger.from_crontab(schedule[1]),
+        kwargs={"room": schedule[0]},
     )
 
 ### start ###
