@@ -40,7 +40,6 @@ def get_all_schedules():
         return []
 
 
-### list ###
 @bot.listener.on_message_event
 async def list_tasks(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
@@ -55,7 +54,6 @@ async def list_tasks(room, message):
         await bot.api.send_text_message(room.room_id, response)
 
 
-### summary ###
 @bot.listener.on_message_event
 async def summary(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
@@ -64,7 +62,6 @@ async def summary(room, message):
         await bot.api.send_text_message(room.room_id, summary)
 
 
-### done ###
 @bot.listener.on_message_event
 async def mark_as_done(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
@@ -82,7 +79,6 @@ async def mark_as_done(room, message):
         await bot.api.send_text_message(room.room_id, response)
 
 
-### read ###
 @bot.listener.on_message_event
 async def read_task(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
@@ -93,7 +89,6 @@ async def read_task(room, message):
         await bot.api.send_text_message(room.room_id, response)
 
 
-### help ###
 @bot.listener.on_message_event
 async def help(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
@@ -104,7 +99,6 @@ async def help(room, message):
         )
 
 
-### schedule ###
 @bot.listener.on_message_event
 async def create_scheduled_message(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
@@ -154,7 +148,6 @@ async def create_scheduled_message(room, message):
             )
 
 
-### add ###
 @bot.listener.on_message_event
 async def add(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
@@ -164,7 +157,6 @@ async def add(room, message):
         await bot.api.send_text_message(room.room_id, "added: " + filename)
 
 
-### reply no ###
 @bot.listener.on_message_event
 async def reply_no(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
@@ -176,7 +168,6 @@ async def reply_no(room, message):
         )
 
 
-### send summary ###
 async def send_summary(room):
     await bot.api.send_text_message(room.room_id, get_summary())
 
@@ -191,7 +182,6 @@ for schedule in schedules:
     )
 
 
-### start ###
 def start_bot():
     print("Starting matrix bot")
     scheduler.start()
