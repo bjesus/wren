@@ -20,14 +20,17 @@ from wren.core import (
     config,
 )
 
-creds = botlib.Creds(config["matrix_homeserver"], config["matrix_localpart"], config["matrix_password"])
+creds = botlib.Creds(
+    config["matrix_homeserver"], config["matrix_localpart"], config["matrix_password"]
+)
 bot = botlib.Bot(creds)
-PREFIX = '!'
+PREFIX = "!"
 COMMANDS = ["list", "summary", "done", "done", "do", "d", "read", "help", "schedule"]
 scheduler = BackgroundScheduler()
 
 data_dir = user_data_dir("wren", "wren")
 schedules_path = os.path.join(data_dir, "schedules.json")
+
 
 def get_all_schedules():
     try:
@@ -35,6 +38,7 @@ def get_all_schedules():
             return json.load(file)
     except FileNotFoundError:
         return []
+
 
 ### list ###
 @bot.listener.on_message_event
@@ -48,10 +52,8 @@ async def list_tasks(room, message):
     else:
         response = "no current tasks\nenter any text to save it as task"
     if match.prefix() and match.command("list") and match.is_not_from_this_bot():
-        await bot.api.send_text_message(
-            room.room_id,
-            response
-        )
+        await bot.api.send_text_message(room.room_id, response)
+
 
 ### summary ###
 @bot.listener.on_message_event
@@ -59,23 +61,26 @@ async def summary(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
     summary = get_summary()
     if match.prefix() and match.command("summary"):
-        await bot.api.send_text_message(
-            room.room_id,
-            summary
-        )
+        await bot.api.send_text_message(room.room_id, summary)
+
 
 ### done ###
 @bot.listener.on_message_event
 async def mark_as_done(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
-    if match.prefix() and match.command("done") or match.command("don") or match.command("do") or match.command("d") and match.is_not_from_this_bot():
+    if (
+        match.prefix()
+        and match.command("done")
+        or match.command("don")
+        or match.command("do")
+        or match.command("d")
+        and match.is_not_from_this_bot()
+    ):
         text = message.body
         name = " ".join(text.split(" ")[1:])
         response = mark_task_done(name)
-        await bot.api.send_text_message(
-            room.room_id,
-            response
-        )
+        await bot.api.send_text_message(room.room_id, response)
+
 
 ### read ###
 @bot.listener.on_message_event
@@ -85,10 +90,8 @@ async def read_task(room, message):
         text = message.body
         name = " ".join(text.split(" ")[1:])
         response = get_task_content(name)
-        await bot.api.send_text_message(
-            room.room_id,
-            response
-        )
+        await bot.api.send_text_message(room.room_id, response)
+
 
 ### help ###
 @bot.listener.on_message_event
@@ -97,14 +100,15 @@ async def help(room, message):
     if match.prefix() and match.command("help") and match.is_not_from_this_bot():
         await bot.api.send_text_message(
             room.room_id,
-            "wren\n\n- enter any text to save it as task\n- mark a task as done by `/done foo`"
+            "wren\n\n- enter any text to save it as task\n- mark a task as done by `/done foo`",
         )
+
 
 ### schedule ###
 @bot.listener.on_message_event
 async def create_scheduled_message(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
-    
+
     if match.prefix() and match.command("schedule") and match.is_not_from_this_bot():
         text = message.body
         schedule = " ".join(text.split(" ")[1:6])
@@ -115,16 +119,17 @@ async def create_scheduled_message(room, message):
         schedules = get_all_schedules()
         nl = "\n* "
         if not schedule:
-            my_schedules = [f"{s[2]} at {s[1]}" for s in schedules if s[0] == room.room_id]
+            my_schedules = [
+                f"{s[2]} at {s[1]}" for s in schedules if s[0] == room.room_id
+            ]
             if my_schedules:
                 await bot.api.send_text_message(
                     room.room_id,
-                    f'your scheduled summaries are:{nl}{nl.join(my_schedules)}'
+                    f"your scheduled summaries are:{nl}{nl.join(my_schedules)}",
                 )
             else:
                 await bot.api.send_text_message(
-                    room.room_id,
-                    f"you got nothing scheduled!"
+                    room.room_id, f"you got nothing scheduled!"
                 )
             return
 
@@ -141,14 +146,13 @@ async def create_scheduled_message(room, message):
                 kwargs={"room": room.room_id},
             )
             await bot.api.send_text_message(
-                room.room_id,
-                f"Added a schedule: {job[1]}: {job[2]}"
-            )   
+                room.room_id, f"Added a schedule: {job[1]}: {job[2]}"
+            )
         else:
             await bot.api.send_text_message(
-                room.room_id,
-                f"Invalid cron format: {schedule}"
+                room.room_id, f"Invalid cron format: {schedule}"
             )
+
 
 ### add ###
 @bot.listener.on_message_event
@@ -157,10 +161,8 @@ async def add(room, message):
     if not match.prefix() and match.is_not_from_this_bot():
         text = message.body
         filename = create_new_task(text)
-        await bot.api.send_text_message(
-            room.room_id,
-            "added: " + filename
-        )
+        await bot.api.send_text_message(room.room_id, "added: " + filename)
+
 
 ### reply no ###
 @bot.listener.on_message_event
@@ -170,24 +172,24 @@ async def reply_no(room, message):
     if match.prefix() and match.is_not_from_this_bot() and command[1:] not in COMMANDS:
         await bot.api.send_text_message(
             room.room_id,
-            "not sure what you want. seek !help" + " entered: " + message.body
+            "not sure what you want. seek !help" + " entered: " + message.body,
         )
+
 
 ### send summary ###
 async def send_summary(room):
-    await bot.api.send_text_message(
-        room.room_id,
-        get_summary()
-    )
+    await bot.api.send_text_message(room.room_id, get_summary())
+
 
 schedules = get_all_schedules()
 for schedule in schedules:
-    print("scheduled task: " + schedule[2] + " at " + schedule[1])    
+    print("scheduled task: " + schedule[2] + " at " + schedule[1])
     scheduler.add_job(
         send_summary,
         CronTrigger.from_crontab(schedule[1]),
         kwargs={"room": schedule[0]},
     )
+
 
 ### start ###
 def start_bot():
