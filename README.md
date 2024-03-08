@@ -11,7 +11,7 @@ a note taking application and a to-do management system that is ridiculously sim
 
 Wren is simple because every note is one file. The filename is the title, and the content is the note's content. This makes it very easy to sync tasks between devices, as conflicts can almost never happen, even if syncing isn't done real time. The files are plain text, so you can just write. If you want a task to repeat every Saturday you just prefix it with a cron syntax, e.g. `0 8 * * 6 weekly swim`, and if you want a task to appear from a specific time you just start it with the date, like `2030-01-01 check if Wren became super popular`.
 
-Wren is advanced because it is very extensible - it comes (optionally!) with a Telegram bot that you can chat with to manage your notes, and even get AI-driven daily summaries as if you had a personal assistant. It also includes a tiny HTTP server that you can use to manage tasks using an API or from the browser, which can be used for displaying you tasks elsewhere (e.g. in your e-reader).
+Wren is advanced because it is very extensible - it comes (optionally!) with a Telegram bot that you can chat with to manage your notes, a Matrix bot, and even get AI-driven daily summaries as if you had a personal assistant. It also includes a tiny HTTP server that you can use to manage tasks using an API or from the browser, which can be used for displaying you tasks elsewhere (e.g. in your e-reader).
 
 https://github.com/bjesus/wren/assets/55081/0deff819-ab30-4a64-a4db-5e9a29179309
 
@@ -127,6 +127,15 @@ With `--http` you get both a simple tiny website that works through the browser,
 - Mark as done: `curl http://localhost:8080/content -X DELETE`
 
 The HTTP server can be used to integrate with voice assistants, [Home Assistant](https://www.home-assistant.io/), [Tasker](https://joaoapps.com/tasker/) etc. Like with the Telegram bot, if you want to run it outside your computer, I recommend using [Syncthing](https://syncthing.net/).
+
+##### Matrix bot
+
+Using `--matrix` will spin up a Matrix bot that works very similarly to the Telegram bot.
+
+- List tasks using `!list`
+- Create task by just writing it, e.g. `make a plan for going back to earth`
+- Mark as done with `!done plan`
+- See more at `!help`
 
 ## Configuration
 
