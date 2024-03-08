@@ -8,7 +8,7 @@ from dateutil import parser
 from platformdirs import user_data_dir, user_config_dir
 from croniter import croniter
 
-__version__ = "0.3.2"
+__version__ = "0.4.0"
 
 # Load config and set up folders
 
@@ -25,6 +25,9 @@ config = {
     "telegram_token": "",
     "allowed_telegram_chats": [],
     "about_user": "The user chose to specify nothing.",
+    "matrix_homeserver": "",
+    "matrix_localpart": "",
+    "matrix_password": "",
 }
 
 config_file = os.path.join(config_dir, "wren.json")
