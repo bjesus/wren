@@ -17,15 +17,17 @@ https://github.com/bjesus/wren/assets/55081/0deff819-ab30-4a64-a4db-5e9a29179309
 
 ## Installation
 
-The easiest way to install Wren is with pip:
+The easiest way to install Wren is with `pip` or `uv`:
 
 ```
 $ pip install wren-notes
+$ uv tool install wren-tools
 ```
 
 To install with all optional dependencies:
 ```
-$ pip install "wren-notes[telegram,http]"
+$ pip install "wren-notes[telegram,http,llm]"
+$ uv tool install "wren-notes[telegram,http,llm]"
 ```
 
 ## Usage
@@ -106,7 +108,7 @@ Use `--one` to print one random task. I'm using it with [Waybar](https://github.
 
 ##### AI Assistant
 
-Wren can also work like an AI Assistant. If you use `--summary` it will use GPT4 to create a nice human like message telling you what's waiting for you today, and congratulate you for the stuff you have completed recently. You can use it to update `/etc/motd` daily, or through the Telegram bot (below).
+Wren can also work like an AI Assistant. If you use `--summary` it will use [LiteLLM](https://github.com/BerriAI/litellm) to reach the LLM model of your choice and create a nice, human like message, telling you what's waiting for you today, and congratulating you for the stuff you have completed recently. You can use it to update `/etc/motd` daily, or through the Telegram bot (below).
 
 ##### Telegram bot
 
@@ -141,15 +143,19 @@ Using `--matrix` will spin up a Matrix bot that works very similarly to the Tele
 
 See the configuration path on your operating system using `--version`.
 
-The schema is as follows and all keys are optional. Remove the comments from your actual file.
+The schema is as follows and **all keys are optional**. You can disable HTTP/Telegram/Matrix/AI features by simply not including them in your config. Remove the comments from your actual file.
 ```
 {
   "notes_dir": "~/Notes",  // This can absolute or include ~
   "done_dir": "done",      // This can be relative to the notes dir, or absolute
-  "http_user": "",         // Fill this to enable basic HTTP auth for the HTTP server
-  "http_password": "",     // Same as above
-  "openai_token": "",      // Fill this if you want to use summaries
-  "telegram_token": "",    // Fill this if you want the Telegram bot
+  "http_user": "",         // Enable basic HTTP auth for the HTTP server
+  "http_password": "",     // Password for HTTP basic auth
+  "llm_model": "",         // LLM model name, in a litellm syntax. e.g. "gemini/gemini-2.5-flash-preview-04-17" or "openai/gpt-4o"
+  "llm_key": "",           // LLM access token. Alternatively set it through an env variable
+  "telegram_token": "",    // Token for the Telegram bot
+  "matrix_homeserver": "", // Settings for the Matrix bot
+  "matrix_localpart": "",  // 
+  "matrix_password": "",   //
   "allowed_telegram_chats": [
     1234564868             // Initiating a chat will print out the chat ID you should fill here
   ],
