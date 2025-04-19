@@ -1,14 +1,13 @@
 import os
 import shutil
 from pathvalidate import sanitize_filename as sanitize_filename_orig
-import requests
 import json
 from datetime import datetime
 from dateutil import parser
 from platformdirs import user_data_dir, user_config_dir
 from croniter import croniter
 
-__version__ = "0.4.1"
+__version__ = "0.5.0"
 
 # Load config and set up folders
 
@@ -90,9 +89,8 @@ def get_tasks(query="", done=False) -> list[str]:
 
 
 def get_summary() -> str:
-    if not config["openai_token"]:
-        return "Please specify your OpenAI token in the Wren config file"
-    url = "https://api.openai.com/v1/chat/completions"
+    from litellm import completion
+
     current_time = datetime.now().isoformat()
     tasks = get_tasks()
     current_message = {"role": "user", "content": f"{current_time}\n{tasks}"}
@@ -103,9 +101,9 @@ def get_summary() -> str:
     except FileNotFoundError:
         existing_data = []
 
-    payload = {
-        "model": "gpt-4",
-        "messages": [
+    response = completion(
+        model=config["llm_model"],
+        messages=[
             {
                 "role": "system",
                 "content": "You are a helpful assistant that helps the user be on top of their schedule and tasks. every once in a while, the user is going to send you the current time and a list of currently pending tasks. your role is to tell the user in a simple language what they need to do today. IF AND ONLY IF a task has been ongoing for a long time, let the user know about it. IF AND ONLY IF you see a task that appeared earlier in the chat but doesn't appear anymore, add a small congratulation to acknowledge the fact that the task was completed. the user will send each task in a new line starting with a dash. words starting with a plus sign are tags related to task. when writing back to the user, try to mention tasks that share the same tags or concept together and be concise. The user added the following context: "
@@ -114,13 +112,9 @@ def get_summary() -> str:
         ]
         + existing_data
         + [current_message],
-    }
-    headers = {
-        "content-type": "application/json",
-        "Authorization": "Bearer " + config["openai_token"],
-    }
+        api_key=config.get("llm_key"),
+    )
 
-    response = requests.post(url, json=payload, headers=headers)
     data = response.json()
     response = data["choices"][0]["message"]["content"]
 

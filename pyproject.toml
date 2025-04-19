@@ -1,6 +1,6 @@
 [project]
 name = "wren-tools"
-version = "0.4.1"
+version = "0.5.0"
 description = "The simplest task management system with the most advanced features"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -10,9 +10,6 @@ dependencies = [
   "platformdirs==4.1.0",
   "python-dateutil==2.8.2",
   "pytz==2023.3.post1",
-  "requests==2.31.0",
-  "six==1.16.0",
-  "urllib3==2.1.0",
 ]
 classifiers = ["License :: OSI Approved :: MIT License"]
 keywords = ["note taking", "todo", "to do", "task management"]
@@ -29,6 +26,7 @@ telegram = [
 ]
 http = ["bottle==0.12.25"]
 matrix = ["APScheduler==3.10.4", "simplematrixbotlib==2.10.3"]
+llm = ["litellm==1.66.3"]
 
 [project.urls]
 Homepage = "https://github.com/bjesus/wren"
